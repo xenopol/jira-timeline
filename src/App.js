@@ -1,33 +1,54 @@
 import React, { Component } from 'react'
 
 import { getActiveSprint, getIssues } from './api'
-import Story from './Components/Story'
+import Timeline from './Components/Timeline'
 
 import logo from './logo.svg'
 import './App.css'
-
+import mockActiveSprint from './Mock/activeSprint'
+import mockIssues from './Mock/issues'
 
 const getData = async () => {
   const { data: sprintData } = await getActiveSprint()
   const [activeSprint] = sprintData.values
   const { data: issuesData } = await getIssues(activeSprint.id)
-  console.log(issuesData.issues)
-  return issuesData.issues
+  return {
+    sprintId: activeSprint.id,
+    sprintStart: activeSprint.startDate,
+    sprintEnd: activeSprint.endDate,
+    issues: issuesData.issues
+  }
+}
+
+const getMockData = async () => {
+  const [activeSprint] = mockActiveSprint.values
+  return {
+    sprintId: activeSprint.id,
+    sprintStart: activeSprint.startDate,
+    sprintEnd: activeSprint.endDate,
+    issues: mockIssues.issues
+  }
 }
 
 class App extends Component {
   state = {
+    loading: true,
+    sprintId: null,
+    sprintStart: null,
+    sprintEnd: null,
     issues: []
   }
 
   componentDidMount() {
-    getData()
-      .then(res => this.setState({ issues: res }))
+    getMockData()
+      .then(({ sprintId, sprintStart, sprintEnd, issues }) => {
+        this.setState({ loading: false, sprintId, sprintStart, sprintEnd, issues })
+      })
       .catch(err => console.log(err))
   }
 
   render() {
-    const { issues } = this.state
+    const { loading, sprintId, sprintStart, sprintEnd, issues } = this.state
 
     return (
       <div className="App">
@@ -38,25 +59,17 @@ class App extends Component {
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
-        <div>
-          {
-            issues.map(issue => {
-              const { fields } = issue
-              return (
-                <Story
-                  key={ issue.id }
-                  status={ fields.status }
-                  type={ fields.issuetype.iconUrl }
-                  id={ issue.key }
-                  avatar={ fields.assignee.avatarUrls }
-                  title={ fields.summary }
-                  epic={ fields.epic }
-                  points={ fields.customfield_10013 }
-                />
-              )
-            })
-          }
-        </div>
+
+        { !loading && (
+          <div className="App-body">
+            <Timeline
+              sprintId={ sprintId }
+              sprintStart={ sprintStart }
+              sprintEnd={ sprintEnd }
+              issues={ issues }
+            />
+          </div>
+        )}
       </div>
     )
   }

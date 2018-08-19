@@ -1,7 +1,7 @@
 const express = require('express')
 const cors = require('cors')
 const config = require('./config')
-const { resolve } = require('path')
+// const { resolve } = require('path')
 const app = express()
 const port = process.env.port || 3000
 
@@ -17,11 +17,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 app.use('/api/jira/', require('./Jira'))
-
-// development time route
-app.get('/api/hello', function (request, response) {
-  return response.status(200).send({ 'hello': 'world' })
-})
 
 // static file handling
 // app.use(express.static(resolve(__dirname, '../build')))

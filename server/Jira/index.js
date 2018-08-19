@@ -1,6 +1,8 @@
 const express = require('express')
 const axios = require('axios')
 const config = require('../config')
+const editState = require('./state')
+const state = require('./data/state.json')
 
 const router = express.Router()
 
@@ -33,6 +35,21 @@ router.get('/issue', (request, response) => {
     .catch(error => {
       return response.status(400).send(error)
     })
+})
+
+router.get('/state', (request, response) => {
+  const sprintId = request.query.sprintId
+
+  const { sprints = [] } = state
+  const { issues = [] } = sprints.find(s => s.id === Number(sprintId)) || {}
+  return response.status(200).send({ issues })
+})
+
+router.get('/state/save', (request, response) => {
+  const state = request.query.state
+  editState(state)
+    .then(() => response.status(200).send({ status: 'success', message: 'State saved' }))
+    .catch(error => response.status(400).send({ status: 'error', message: error }))
 })
 
 module.exports = router
