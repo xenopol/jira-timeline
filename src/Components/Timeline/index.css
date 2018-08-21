@@ -1,7 +1,5 @@
-.Timeline-header { display: flex; align-items: center; font-size: 2.4rem; text-align: left; border-bottom: 1px solid #000; }
-  .Timeline-day:not(.isWeekend) { width: calc(100% / 11); padding: 5px 10px; border-left: 1px solid #000; box-sizing: border-box; }
-  .Timeline-day:nth-child(5),
-  .Timeline-day:last-child { border-right: 1px solid #000; }
+.Timeline-header { display: flex; align-items: center; font-size: 2.4rem; text-align: left; }
+  .Timeline-day:not(.isWeekend) { width: calc(100% / 11); padding: 5px 10px; box-sizing: border-box; }
   .Timeline-day.isWeekend { width: calc((100% / 11) / 2); font-size: 1.6rem; color: #ccc; text-align: center; }
   .Timeline-day.isCurrent { color: red; }
 

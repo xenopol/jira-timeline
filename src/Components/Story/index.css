@@ -1,18 +1,23 @@
 .line-through { text-decoration: line-through; }
+.gradient { background: repeating-linear-gradient(-45deg,red,red 20px,blue 20px,blue 40px);
+  background-size: 56px 56px;
+  background-position-x: 0%;
+  animation: slide 20s infinite linear forwards; }
 
-.Story-wrapper { position: relative; }
+  @keyframes slide {
+    0%{ background-position-x:0%; }
+    100% { background-position-x:100%; }
+}
 
-  .Story-marker { position: absolute; top: 0; right: 0; width: 4rem; height: 100%; z-index: 1; }
-  .Story-marker.ready-for-review { background: red; }
-  .Story-marker.ready-for-test { background: blue; }
-  .Story-marker.ready-for-merge { background: green; }
+.Story-wrapper { position: relative; margin-top: 2rem; }
 
-  .Story { display: flex; flex-direction: column; position: relative; padding: 1rem; border: 1px solid #ccc;
-    box-sizing: border-box; background: white; font-size: 1.4rem; text-align: left; user-select: none; }
+  .Story { display: flex; flex-direction: column; position: relative; padding: 1rem 2rem; border: 1px solid #ddd;
+    box-sizing: border-box; background-color: white; font-size: 1.4rem; text-align: left; user-select: none; border-radius: 3rem; }
 
-    .Story-header { display: flex;  }
+    .Story-header { display: flex; align-items: center; }
       .Story-header-type { margin-right: 1.4rem; }
-      .Story-header-avatar { position: absolute; top: 1rem; right: 1rem; width: 3.2rem; height: 3.2rem; border-radius: 50%; }
+      /* .Story-header-avatar { position: absolute; top: 1rem; right: 1rem; width: 3.2rem; height: 3.2rem; border-radius: 50%; } */
+      .Story-header-avatar { width: 2.8rem; height: 2.8rem; margin-left: auto; border-radius: 50%; }
 
     .Story-body { padding: 1rem 4.5rem 1rem 3rem; }
       .Story-body-title { height: 5rem; overflow: hidden; }

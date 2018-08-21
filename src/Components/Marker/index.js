@@ -4,7 +4,8 @@ import { saveStateToServer } from '../../api'
 
 import './index.css'
 
-const MARKER_WIDTH = 30
+// is smaller than its children in order to be moved all the way to the right
+const MARKER_WRAPPER_WIDTH = 26
 
 export const resizeOptions = {
   top: false,
@@ -77,7 +78,7 @@ class Marker extends Component{
 
     if ((resizing && isActiveMarker) || xPos) return (
       <Rnd
-        default={ { x: offset - MARKER_WIDTH, y: 0, width: MARKER_WIDTH, height: '100%' } }
+        default={ { x: offset - 26, y: -9, width: MARKER_WRAPPER_WIDTH, height: '100%' } }
         dragAxis="x"
         dragGrid={ [stepSize, 0] }
         enableResizing={ resizeOptions }
@@ -85,8 +86,16 @@ class Marker extends Component{
         bounds="parent"
         onDragStop={ this.onDragStop }
       >
-        <div className="Marker" style={ { background: color } }>
-          { name }
+        <div className="Marker">
+          <div className="Marker-sign">
+            <div className="Marker-sign-board" style={ { background: color } }></div>
+            <div
+              className="Marker-sign-arrow"
+              style={ { borderLeft: `15px solid ${color}` } }
+            ></div>
+            <div className="Marker-sign-pole" style={ { background: color } }></div>
+          </div>
+          <div className="Marker-name">{ name }</div>
         </div>
       </Rnd>
     )

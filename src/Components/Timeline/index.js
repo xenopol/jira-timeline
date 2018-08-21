@@ -4,6 +4,8 @@ import { getStateFromServer } from '../../api'
 
 import './index.css'
 
+const BORDER_COLOR = '#f1f1f1'
+
 const parseDate = date => {
   const [startDate] = date.split('T') // split date from time
   return new Date(startDate)
@@ -64,10 +66,20 @@ class Timeline extends Component {
     const start = parseDate(sprintStart)
     const end = parseDate(sprintEnd)
     const days = generateDays(start, end)
+    const style = {
+      borderRight: `1px solid ${BORDER_COLOR}`,
+      backgroundImage: `repeating-linear-gradient(
+        to right,
+        ${BORDER_COLOR},
+        ${BORDER_COLOR} 1px,
+        transparent 1px,
+        transparent ${stepSize * 2}px
+      )`
+    }
 
     return (
-      <div className="Timeline" ref={ this.timelineRef }>
-        <div className="Timeline-header">
+      <div className="Timeline" ref={ this.timelineRef } style={ stepSize && style }>
+        <div className="Timeline-header" style={ { background: BORDER_COLOR } }>
           { days.map((day, i) => (
             <div key={ i } className={ `Timeline-day ${getClassName(day)}` }>
               { day.number }

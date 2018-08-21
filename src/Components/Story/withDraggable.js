@@ -7,11 +7,13 @@ import { saveStateToServer } from '../../api'
 import './index.css'
 
 const markers = [
-  { name: 'RR', color: 'red' },
-  { name: 'RT', color: 'blue' },
-  { name: 'RM', color: 'green' }
+  { name: 'review', color: '#ff5722' },
+  { name: 'test', color: '#03a9f4' },
+  { name: 'merge', color: '#43a047' }
 ]
 
+const DEFAULT_GRADIENT_COLOR = '#0000ff'
+const STORY_HEIGHT_MINIMIZED = 50
 const STORY_HEIGHT = 132
 
 class StoryWithDraggable extends Component{
@@ -104,13 +106,21 @@ class StoryWithDraggable extends Component{
 
   render() {
     const { issue, issueState, stepSize } = this.props
+    const { resizing, resizeCount } = this.state
     const { width, left } = issueState
     const storyWidth = Math.round(5 * stepSize)
+    const resizingGradient = (markers[resizeCount] && markers[resizeCount].color)
+      || DEFAULT_GRADIENT_COLOR
 
     return (
-      <div className="Story-wrapper" style={ { height: STORY_HEIGHT } }>
+      <div className="Story-wrapper" style={ { height: STORY_HEIGHT_MINIMIZED } }>
         <Rnd
-          default={ { x: left || 0, y: 0, width: width || storyWidth, height: STORY_HEIGHT } }
+          default={ {
+            x: left || 0,
+            y: 0,
+            width: width || storyWidth,
+            height: STORY_HEIGHT_MINIMIZED
+          } }
           enableResizing={ { ...resizeOptions, right: true } }
           dragAxis="x"
           resizeHandleStyles={ { right: { width: '40px', right: '-15px', cursor: 'ew-resize' } } }
@@ -124,7 +134,12 @@ class StoryWithDraggable extends Component{
           cancel=".Marker"
         >
           { this.renderMarkers() }
-          <Story issue={ issue } height={ STORY_HEIGHT } />
+          <Story
+            issue={ issue }
+            height={ STORY_HEIGHT_MINIMIZED }
+            resizing={ resizing }
+            resizingGradient={ resizingGradient }
+          />
         </Rnd>
       </div>
     )
