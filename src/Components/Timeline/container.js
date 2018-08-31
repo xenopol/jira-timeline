@@ -1,14 +1,9 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-
-import { setStepSize as setStepSizeAction } from '../../store/actions/setStepSize'
+import { setStepSize as setStepSizeAction } from '../../store/actions/step-size'
+import { parseDate } from './utils'
 
 import Timeline from './'
-
-const parseDate = date => {
-  const [day] = date.split('T') // split date from time
-  return new Date(day)
-}
 
 const timelineRef = React.createRef()
 
@@ -23,26 +18,28 @@ class TimelineContainer extends Component{
   }
 
   render() {
-    const { sprintStart, sprintEnd, stepSize, issues, issuesState } = this.props
+    const { name, sprintStart, sprintEnd, stepSize, issues, storyChanges } = this.props
     const startDay = parseDate(sprintStart)
     const endDay = parseDate(sprintEnd)
 
     return <Timeline
+      name={ name }
       stepSize={ stepSize }
       issues={ issues }
-      issuesState={ issuesState }
-      ref={ timelineRef }
+      storyChanges={ storyChanges }
+      timelineRef={ timelineRef }
       startDay={ startDay }
       endDay={ endDay }
     />
   }
 }
 
-const mapStateToProps = ({ sprint, stepSize }) => ({
+const mapStateToProps = ({ sprint, stepSize, storyChanges }) => ({
+  name: sprint.name,
   sprintStart: sprint.sprintStart,
   sprintEnd: sprint.sprintEnd,
   issues: sprint.issues,
-  issuesState: sprint.issuesState,
+  storyChanges,
   stepSize: stepSize,
 })
 

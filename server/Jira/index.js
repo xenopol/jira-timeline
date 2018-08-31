@@ -39,10 +39,9 @@ router.get('/issue', (request, response) => {
 
 router.get('/state', (request, response) => {
   const sprintId = request.query.sprintId
-
   const { sprints = [] } = state
-  const { issues = [] } = sprints.find(s => s.id === Number(sprintId)) || {}
-  return response.status(200).send({ issues })
+  const { changes = [] } = sprints.find(s => s.id === Number(sprintId)) || {}
+  return response.status(200).send({ changes })
 })
 
 router.get('/state/save', (request, response) => {

@@ -2,6 +2,8 @@ import React from 'react'
 
 import './index.css'
 
+const BASE_URL = 'https://jira.tdc.dk/browse/'
+
 const hexToRgbA = (hex, opacity) => {
   let c
   if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
@@ -15,7 +17,7 @@ const hexToRgbA = (hex, opacity) => {
   throw new Error('Bad Hex')
 }
 
-const isResolved = status => (
+export const isResolved = status => (
   status.name && status.name.toLowerCase() === 'resolved'
 )
 
@@ -25,11 +27,12 @@ const style = (height, resizing, resizingGradient) => {
     background: `linear-gradient(
       to right,
       ${resizingGradient},
-
-    )`
+    )`,
   }
 
-  const secondaryColor = '#fff'
+  if (!resizingGradient) return defaultStyle
+
+  const secondaryColor = 'rgba(255, 255, 255, 0.1)'
 
   const gradient = {
     background: `repeating-linear-gradient(
@@ -41,30 +44,29 @@ const style = (height, resizing, resizingGradient) => {
     )`,
     backgroundSize: '56px 56px',
     backgroundPositionX: '0%',
-    animation: 'slide 20s infinite linear forwards'
+    animation: 'slide 20s infinite linear forwards',
   }
 
-  if (resizing) return {
-    ...defaultStyle,
-    ...gradient
-  }
-
-  return defaultStyle
+  if (resizing) return { ...defaultStyle, ...gradient }
 }
 
-const Story = ({ issue, height, resizing, resizingGradient }) => {
+const Story = ({ issue, height, isResizing, resizingGradient }) => {
   const { fields, key: id } = issue
   const type = fields.issuetype && fields.issuetype.iconUrl
   const avatar = fields.assignee && fields.assignee.avatarUrls
   const { status, summary: title, epic, customfield_10013: points } = fields
 
   return (
-    <div className="Story" style={ style(height, resizing, resizingGradient) }>
+    <div className="Story" style={ style(height, isResizing, resizingGradient) }>
       <div className="Story-header">
         <img className="Story-header-type" src={ type } alt="story type" />
-        <div className={ `Story-header-id ${isResolved(status) ? 'line-through' : ''}` }>
+        <a
+          className={ `Story-header-id ${isResolved(status) ? 'line-through' : ''}` }
+          href={ `${BASE_URL}${id}` }
+          target="_blank"
+        >
           { id }
-        </div>
+        </a>
         <img className="Story-header-avatar" src={ avatar["24x24"] } alt="avatar" />
       </div>
       {/* <div className="Story-body">

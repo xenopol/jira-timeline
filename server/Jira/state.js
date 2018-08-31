@@ -14,45 +14,20 @@ const writeState = (state) => {
 }
 
 const editState = async stateData => {
-  const { sprintId, issueId, newState } = JSON.parse(stateData)
+  const { sprintId, changes } = JSON.parse(stateData)
+
+  if (!sprintId) return Promise.reject(`'sprintId' is required`)
+
+  if (!state.sprints) state.sprints = []
+
   const { sprints } = state
-
-  if (!sprintId || !issueId) return Promise.reject(`'sprintId' and 'issueId' are required`)
-
-  if (!sprints) {
-    state.sprints = []
-    state.sprints.push({
-      id: sprintId,
-      issues: [
-        { id: issueId, markers: [], ...newState }
-      ]
-    })
+  const activeSprint = sprints.find(sprint => sprint.id === sprintId)
+  if (!activeSprint) {
+    sprints.push({ id: sprintId, changes })
     return writeState(state)
   }
 
-  const activeSprint = sprints.find(s => s.id === sprintId)
-  const { issues } = activeSprint
-  const activeIssue = issues.find(i => i.id === issueId)
-
-  if (!activeIssue) {
-    activeSprint.issues.push({ id: issueId, markers: [], ...newState })
-    return writeState(state)
-  }
-
-  const { marker } = newState
-  const { markers } = activeIssue
-  let activeMarker = marker && markers.find(m => m.id === marker.id)
-
-  if (activeMarker) {
-    activeMarker = marker
-    return writeState(state)
-  }
-  if (marker) {
-    markers.push(marker)
-    return writeState(state)
-  }
-
-  Object.keys(newState).forEach(key => activeIssue[key] = newState[key])
+  activeSprint.changes = changes
   return writeState(state)
 }
 

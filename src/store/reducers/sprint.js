@@ -1,17 +1,9 @@
-import { SET_SPRINT, SET_ISSUE_STATE } from '../actions/data'
+import { SET_SPRINT_SUCCESS } from '../actions/sprint'
 
-const sprint = (state = {}, action) => {
-  switch (action.type) {
-    case SET_SPRINT:
-      return {
-        ...state,
-        ...action.payload,
-      }
-    case SET_ISSUE_STATE:
-      return {
-        ...state,
-        ...action.payload,
-      }
+const sprint = (state = {}, { type, payload }) => {
+  switch (type) {
+    case SET_SPRINT_SUCCESS:
+      return { ...payload }
     default:
       return state
   }
