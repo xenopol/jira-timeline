@@ -1,4 +1,4 @@
-import { getStateFromServer, saveStateToServer } from '../../api/'
+import { getChangeFromServer, saveChangeToServer } from '../../api/'
 import { loading, error } from './status'
 
 export const CHANGE_TYPES = {
@@ -15,7 +15,7 @@ export const fetchStoryChangesSuccess = changes => ({
 
 export const initStoryChanges = () => (dispatch, getState) => {
   const { sprint: { sprintId } } = getState()
-  getStateFromServer(sprintId)
+  getChangeFromServer(sprintId)
     .then(({ data: { changes } }) => {
       dispatch(fetchStoryChangesSuccess(changes))
       dispatch(loading(false))
@@ -53,7 +53,7 @@ export const handleStoryChange = (type, change) => (dispatch, getState) => {
   if (type === CHANGE_TYPES.markerDrag) dispatch(addMarkerDragChange(change))
 
   const { sprint: { sprintId }, storyChanges } = getState()
-  saveStateToServer(JSON.stringify({ sprintId, changes: storyChanges }))
+  saveChangeToServer(JSON.stringify({ sprintId, changes: storyChanges }))
     .then(response => dispatch(addStoryChangeToServerSuccess(response)))
     .catch(err => dispatch(dispatch(error(err))))
 }

@@ -4,17 +4,12 @@ import { Rnd } from 'react-rnd'
 import { handleStoryChange as handleStoryChangeAction } from '../../store/actions/story-change'
 import Marker, { resizeOptions } from '../Marker/container'
 import { CHANGE_TYPES } from '../../store/actions/story-change'
+import { markersData, getBackgroundGradient, getResizingGradient } from './utils'
 
 import Story from './'
 
-const DEFAULT_GRADIENT_COLOR = '#0000ff'
-const STORY_HEIGHT_MINIMIZED = 50
-
-const markersData = [
-  { name: 'review', color: '#ff5722' },
-  { name: 'test', color: '#03a9f4' },
-  { name: 'merge', color: '#43a047' },
-]
+const DEFAULT_BACKGROUND_COLOR = '#fff'
+const STORY_HEIGHT = 50
 
 class StoryContainer extends Component{
   constructor(props) {
@@ -82,26 +77,44 @@ class StoryContainer extends Component{
     })
   }
 
-  render() {
+  getStyle() {
     const { isResizing } = this.state
+    const { change, stepSize } = this.props
+
+    const { markers = [] } = change || {}
+    const { color: activeMarkerColor } = markersData[markers.length] || {}
+    const { color: defaultResizingColor} = markersData[markersData.length - 1]
+    const primaryGradientColor = activeMarkerColor || defaultResizingColor
+
+    const defaultStyle = { minHeight: STORY_HEIGHT }
+
+    if (isResizing) return {
+      ...defaultStyle,
+      ...getResizingGradient(primaryGradientColor, DEFAULT_BACKGROUND_COLOR) }
+
+    return {
+      ...defaultStyle,
+      ...getBackgroundGradient(markers, DEFAULT_BACKGROUND_COLOR, stepSize),
+    }
+  }
+
+  render() {
     const { issue, change, stepSize } = this.props
     const { width, left, markers = [] } = change || {}
     const storyWidth = 5
-    const resizingGradient = (markersData[markers.length] && markersData[markers.length].color)
-      || DEFAULT_GRADIENT_COLOR
 
     return (
-      <div className="Story-wrapper" style={ { height: STORY_HEIGHT_MINIMIZED } }>
+      <div className="Story-wrapper" style={ { height: STORY_HEIGHT } }>
         <Rnd
           default={ {
             x: (left || 0) * stepSize,
             y: 0,
             width: (width || storyWidth) * stepSize,
-            height: STORY_HEIGHT_MINIMIZED,
+            height: STORY_HEIGHT,
           } }
           enableResizing={ { ...resizeOptions, right: true } }
           dragAxis="x"
-          resizeHandleStyles={ { right: { width: '40px', right: '-15px', cursor: 'ew-resize' } } }
+          resizeHandleStyles={ { right: { width: '70px', right: '-50px', cursor: 'ew-resize' } } }
           bounds=".Timeline-body"
           onResizeStart={ this.onResizeStart }
           onResize={ this.onResize }
@@ -115,9 +128,7 @@ class StoryContainer extends Component{
           { this.renderMarkers(markers) }
           <Story
             issue={ issue }
-            height={ STORY_HEIGHT_MINIMIZED }
-            isResizing={ isResizing }
-            resizingGradient={ resizingGradient }
+            style={ this.getStyle() }
           />
         </Rnd>
       </div>

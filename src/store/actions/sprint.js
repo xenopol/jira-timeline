@@ -36,7 +36,7 @@ const setSprintSuccess = sprint => ({
 
 export const setSprint = sprint => dispatch => {
   dispatch(loading(true))
-  getMockData()
+  getData()
     .then(({ name, sprintId, sprintStart, sprintEnd, issues }) => {
       dispatch(setSprintSuccess({ name, sprintId, sprintStart, sprintEnd, issues }))
       dispatch(initStoryChanges())

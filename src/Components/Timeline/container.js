@@ -1,49 +1,53 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { setSprint as setSprintAction } from '../../store/actions/sprint'
 import { setStepSize as setStepSizeAction } from '../../store/actions/step-size'
 import { parseDate } from './utils'
 
 import Timeline from './'
 
-const timelineRef = React.createRef()
-
 class TimelineContainer extends Component{
   componentDidMount() {
-    const { setStepSize } = this.props
-    const { current: timeline } = timelineRef
-    const timelineWidth = timeline.offsetWidth
-    const halfTimelineDay = (timelineWidth / 11) / 2
-
-    setStepSize(halfTimelineDay)
+    const { setSprint } = this.props
+    setSprint()
   }
 
   render() {
-    const { name, sprintStart, sprintEnd, stepSize, issues, storyChanges } = this.props
-    const startDay = parseDate(sprintStart)
-    const endDay = parseDate(sprintEnd)
+    const { name, sprintStart, sprintEnd, issues,
+      storyChanges, loading, stepSize, setStepSize } = this.props
+
+    if (loading) return (
+      <div className="Timeline-loader-container">
+        <div className="Timeline-loader"></div>
+      </div>
+    )
+    const startDay = sprintStart && parseDate(sprintStart)
+    const endDay = sprintEnd && parseDate(sprintEnd)
 
     return <Timeline
       name={ name }
-      stepSize={ stepSize }
       issues={ issues }
       storyChanges={ storyChanges }
-      timelineRef={ timelineRef }
       startDay={ startDay }
       endDay={ endDay }
+      setStepSize={ setStepSize }
+      stepSize={ stepSize }
     />
   }
 }
 
-const mapStateToProps = ({ sprint, stepSize, storyChanges }) => ({
+const mapStateToProps = ({ sprint, stepSize, storyChanges, status }) => ({
   name: sprint.name,
   sprintStart: sprint.sprintStart,
   sprintEnd: sprint.sprintEnd,
   issues: sprint.issues,
   storyChanges,
-  stepSize: stepSize,
+  loading: status.loading,
+  stepSize,
 })
 
 const mapDispatchToProps = dispatch => ({
+  setSprint: () => dispatch(setSprintAction()),
   setStepSize: stepSize => dispatch(setStepSizeAction(stepSize)),
 })
 

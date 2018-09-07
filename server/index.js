@@ -1,25 +1,34 @@
 const express = require('express')
-const cors = require('cors')
-const config = require('./config')
-// const { resolve } = require('path')
+const cookieParser = require('cookie-parser')
+const fs = require('fs')
+const path = require('path')
+
 const app = express()
 const port = process.env.port || 3000
 
-if (!config.jiraCookie) throw new Error('Missing environment variables!')
-
-const corsOptions = {
-  origin: '*',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  allowedHeaders: 'Authorization, X-Authorization',
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
+const changesFilePath = path.resolve(__dirname, 'Jira', 'data', 'changes.json')
+if (!fs.existsSync(changesFilePath)) {
+  fs.writeFileSync(changesFilePath, '{}', 'utf8', err => {
+    if (err) throw err
+  })
 }
 
-app.use(cors(corsOptions))
-app.use('/api/jira/', require('./Jira'))
+const corsOptions = (req, res, next) => {
+  if (req.headers.origin) res.header('Access-Control-Allow-Origin', req.headers.origin)
+  else res.header('Access-Control-Allow-Origin', '*')
 
-// static file handling
-// app.use(express.static(resolve(__dirname, '../build')))
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS,PATCH')
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Content-Type, accept, authorization, cache-control, content-type, expires, pragma'
+  )
+  res.header('Access-Control-Allow-Credentials', 'true')
+  next()
+}
+
+app.use(corsOptions)
+app.use(cookieParser())
+app.use('/api/jira/', require('./Jira'))
 
 const server = app.listen(port, () => {
   console.log('Server is listening on port %s', port)

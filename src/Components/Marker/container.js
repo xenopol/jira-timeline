@@ -16,6 +16,20 @@ export const resizeOptions = {
   topLeft: false,
 }
 
+const MARKER_WIDTH = 2
+const MARKER_FULL_WIDTH = 32
+
+const getStyle = (markerOffset, isDragging) => ({
+    background: `linear-gradient(
+    to right,
+    transparent,
+    transparent ${markerOffset}px,
+    white ${markerOffset}px,
+    white ${markerOffset + MARKER_WIDTH}px,
+    transparent ${markerOffset + MARKER_WIDTH}px
+  )`,
+})
+
 class MarkerContainer extends Component {
   constructor(props) {
     super(props)
@@ -42,12 +56,15 @@ class MarkerContainer extends Component {
   }
 
   render() {
+    const { isDragging } = this.state
     const { id, name, color, stepSize, resizeCount, left } = this.props
     const isPlacedMarker = id < resizeCount
+    const markerOffset = (MARKER_FULL_WIDTH - MARKER_WIDTH) / 2
+    const xPos = (left * stepSize)
 
     if (isPlacedMarker) return (
       <Rnd
-        default={ { x: left * stepSize, y: 0, width: 0, height: '100%' } }
+        default={ { x: xPos, y: 0, width: 0, height: '100%' } }
         dragAxis="x"
         dragGrid={ [stepSize, 0] }
         enableResizing={ resizeOptions }
@@ -56,7 +73,15 @@ class MarkerContainer extends Component {
         onDrag={ this.onDrag }
         onDragStop={ this.onDragStop }
       >
-        <Marker id={ id } name={ name } color={ color } />
+        <div className="Marker-container" style={ { width: MARKER_FULL_WIDTH } }>
+          <Marker
+            id={ id }
+            name={ name }
+            color={ color }
+            style={ getStyle(markerOffset) }
+            isDragging={ isDragging }
+          />
+        </div>
       </Rnd>
     )
     else return null
